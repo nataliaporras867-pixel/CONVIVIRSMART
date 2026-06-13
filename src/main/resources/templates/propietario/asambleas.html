@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CONVIVIRSMART - Asambleas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root { --color-primary: #1a3c5e; }
+        body { background: #f0f2f5; font-family: 'Segoe UI', sans-serif; }
+        .navbar { background: linear-gradient(135deg, #1a3c5e, #2d6a9f) !important; position: fixed; top:0; width:100%; z-index:1000; }
+        .sidebar { background: linear-gradient(180deg, #1a3c5e, #2d6a9f); height: calc(100vh - 56px); width:260px; position:fixed; top:56px; left:0; z-index:999; padding:10px 0; }
+        .sidebar .nav-link { color: rgba(255,255,255,0.75) !important; padding:12px 20px; transition:.3s; }
+        .sidebar .nav-link.active { background: rgba(255,255,255,.2) !important; color:#fff !important; font-weight:bold; }
+        .main-content { margin-left:260px; padding:80px 30px 30px; }
+        @media(max-width:768px){ .sidebar{display:none;} .main-content{margin-left:0;} }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg">
+    <div class="container-fluid px-4">
+        <a class="navbar-brand text-white fw-bold" href="/propietario/dashboard">🏢 CONVIVIRSMART</a>
+        <div class="ms-auto">
+            <a class="btn btn-outline-light btn-sm" href="/logout"><i class="bi bi-box-arrow-right"></i> Salir</a>
+        </div>
+    </div>
+</nav>
+<div class="sidebar">
+    <a href="/propietario/dashboard" class="nav-link"><i class="bi bi-house-gear me-2"></i> Mi Dashboard</a>
+    <a href="/propietario/asambleas" class="nav-link active"><i class="bi bi-megaphone me-2"></i> Asambleas</a>
+</div>
+<div class="main-content">
+    <h4 class="fw-bold mb-4" style="color:#1a3c5e;"><i class="bi bi-calendar-event"></i> Asambleas Virtuales</h4>
+
+    <div th:if="${param.ok}" class="alert alert-success">Voto registrado con éxito.</div>
+    <div th:if="${param.yaVoto}" class="alert alert-warning">Ya emitiste tu voto en esta asamblea.</div>
+
+    <div class="card border-0 shadow-sm rounded-3 p-4">
+        <table class="table table-hover align-middle">
+            <thead class="table-light"><tr>
+                <th>Título</th><th>Tema de votación</th><th>Fecha</th><th>Estado</th><th class="text-center">Acciones</th>
+            </tr></thead>
+            <tbody>
+            <tr th:each="a : ${asambleas}">
+                <td class="fw-bold" th:text="${a.titulo}"></td>
+                <td th:text="${a.tema}"></td>
+                <td th:text="${#temporals.format(a.fechaHora,'dd/MM/yyyy HH:mm')}"></td>
+                <td>
+                    <span th:if="${a.abierta}" class="badge bg-success">Abierta</span>
+                    <span th:unless="${a.abierta}" class="badge bg-secondary">Cerrada</span>
+                </td>
+                <td class="text-center">
+                    <div th:if="${a.abierta}" class="d-flex gap-1 justify-content-center">
+                        <a th:href="${a.enlaceReunion}" target="_blank" class="btn btn-primary btn-sm">
+                            <i class="bi bi-camera-video"></i> Unirse
+                        </a>
+                        <button class="btn btn-outline-success btn-sm"
+                                th:attr="data-id=${a.id}, data-titulo=${a.titulo}, data-opciones=${#strings.listJoin(a.opciones,',')}"
+                                onclick="abrirVotacion(this)">
+                            <i class="bi bi-check2-square"></i> Votar
+                        </button>
+                    </div>
+                    <span th:unless="${a.abierta}" class="text-muted small">Finalizada</span>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(asambleas)}">
+                <td colspan="5" class="text-center text-muted p-4">No hay asambleas programadas.</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal Votación -->
+<div class="modal fade" id="modalVotar" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header" style="background:#1a3c5e; color:#fff;">
+                <h5 class="modal-title"><i class="bi bi-check2-square"></i> Emitir Voto</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p id="modalTitulo" class="fw-bold text-primary"></p>
+                <div id="opcionesContainer" class="d-flex flex-column gap-2"></div>
+                <div id="mensajeVoto" class="alert mt-3 d-none"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button class="btn btn-success" onclick="enviarVoto()"><i class="bi bi-send"></i> Confirmar voto</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+let asambleaActual = null;
+
+function abrirVotacion(btn) {
+    asambleaActual = btn.dataset.id;
+    document.getElementById('modalTitulo').textContent = btn.dataset.titulo;
+    const opts = btn.dataset.opciones.split(',');
+    const cont = document.getElementById('opcionesContainer');
+    cont.innerHTML = '';
+    opts.forEach((op, i) => {
+        cont.innerHTML += `<div class="form-check border rounded p-2">
+            <input class="form-check-input" type="radio" name="opcion" id="op${i}" value="${op.trim()}">
+            <label class="form-check-label fw-semibold" for="op${i}">${op.trim()}</label>
+        </div>`;
+    });
+    document.getElementById('mensajeVoto').classList.add('d-none');
+    new bootstrap.Modal(document.getElementById('modalVotar')).show();
+}
+
+async function enviarVoto() {
+    const sel = document.querySelector('input[name="opcion"]:checked');
+    if (!sel) { alert('Selecciona una opción.'); return; }
+    const msg = document.getElementById('mensajeVoto');
+    try {
+        const res = await fetch(`/api/asambleas/${asambleaActual}/votar`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ propietarioId: 'self', opcionSeleccionada: sel.value })
+        });
+        const data = await res.json();
+        msg.classList.remove('d-none', 'alert-danger', 'alert-success');
+        if (res.ok) {
+            msg.classList.add('alert-success'); msg.textContent = data.mensaje;
+            setTimeout(() => location.reload(), 1500);
+        } else {
+            msg.classList.add('alert-danger'); msg.textContent = data.error;
+        }
+    } catch(e) {
+        msg.classList.remove('d-none'); msg.classList.add('alert-danger');
+        msg.textContent = 'Error de conexión.';
+    }
+}
+</script>
+</body>
+</html>

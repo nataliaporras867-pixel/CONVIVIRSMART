@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CONVIVIRSMART - Dashboard Propietario</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root { --color-primary: #1a3c5e; --color-secondary: #2d6a9f; }
+        body { background-color: #f0f2f5; }
+        .navbar { background: linear-gradient(135deg, #1a3c5e, #2d6a9f) !important; position: fixed; top: 0; width: 100%; z-index: 1000; }
+        .navbar-brand { color: white !important; font-weight: 700; }
+        .sidebar { background: linear-gradient(180deg, #1a3c5e 0%, #2d6a9f 100%); height: calc(100vh - 56px); width: 260px; position: fixed; top: 56px; left: 0; z-index: 999; padding: 10px 0; overflow-y: auto; }
+        .sidebar .nav-link { color: rgba(255,255,255,0.75) !important; padding: 8px 20px; border-radius: 8px; margin: 2px 10px; font-size: 0.9rem; transition: all 0.3s; }
+        .sidebar .nav-link:hover, .sidebar .nav-link.active { background: rgba(255,255,255,0.2) !important; color: white !important; }
+        .main-content { margin-left: 260px; padding: 76px 30px 30px; }
+        .kpi-card { background: #ffffff; border: 2px solid #1a3c5e; border-radius: 12px; padding: 1.5rem; text-align: center; }
+        .kpi-number { font-size: 2rem; font-weight: 800; color: #1a3c5e; }
+        .kpi-label { font-size: 0.8rem; font-weight: 600; color: #6c757d; text-transform: uppercase; }
+        @media (max-width: 768px) { .sidebar { display: none; } .main-content { margin-left: 0; } }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg">
+    <div class="container-fluid px-4">
+        <a class="navbar-brand" href="/propietario/dashboard">CONVIVIRSMART</a>
+        <div class="ms-auto d-flex align-items-center gap-3">
+            <span class="text-white opacity-75 small"><i class="bi bi-person-badge"></i> Propietario</span>
+            <a href="/inicio" class="btn btn-outline-light btn-sm"><i class="bi bi-box-arrow-right"></i> Salir</a>
+        </div>
+    </div>
+</nav>
+
+<div class="sidebar">
+    <p class="sidebar-title" style="padding: 12px 20px 2px; color: rgba(255,255,255,0.45); font-size: 0.7rem;">GESTIÓN PROPIETARIO</p>
+    <a href="/propietario/dashboard" class="nav-link active"><i class="bi bi-house-gear"></i> Mi Dashboard</a>
+    <a href="/propietario/asambleas" class="nav-link"><i class="bi bi-megaphone"></i> Asambleas</a>
+</div>
+
+<div class="main-content">
+    <h4 class="fw-bold mb-4" style="color: #1a3c5e;">Mi Panel de Control</h4>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card kpi-card">
+                <div class="kpi-number" th:text="${totalUnidades}">0</div>
+                <div class="kpi-label">Mis Unidades</div>
+            </div>
+       
+    </div>
+
+    <h6 class="fw-bold mb-3" style="color:#1a3c5e;">Mis Unidades Registradas</h6>
+    <div class="row g-3">
+        <div class="col-md-6" th:each="unidad : ${unidades}" th:if="${unidad != null}">
+            <div class="card shadow-sm border-0 p-3">
+                <div class="card-body">
+                    <h5 class="card-title fw-bold">Unidad: <span th:text="${unidad.numero}"></span></h5>
+                    <p class="text-muted">
+                        Torre: <span th:text="${unidad.torre}"></span> | 
+                        Piso: <span th:text="${unidad.piso}"></span> | 
+                        Estado: 
+                        <span th:class="${unidad.isAlDia()} ? 'text-success' : 'text-danger'" 
+                              th:text="${unidad.isAlDia()} ? 'Al día' : 'En mora'">
+                        </span>
+                    </p>
+                    <div class="d-flex gap-2 mt-3">
+						<a th:href="@{/propietario/documentos/pazysalvo/{id}(id=${unidad.id})}" 
+						   class="btn btn-sm btn-outline-primary">Descargar Paz y Salvo</a>
+                        
+                        <a th:href="@{/propietario/arrendatarios/{id}(id=${unidad.id})}" 
+                           class="btn btn-sm btn-primary">Gestionar Arrendatario</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

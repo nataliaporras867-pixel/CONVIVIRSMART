@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CONVIVIRSMART - Dashboard Administrador</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root { --color-primary: #1a3c5e; --color-secondary: #2d6a9f; }
+        body { background-color: #f0f2f5; }
+
+        /* Navbar */
+        .navbar {
+            background: linear-gradient(135deg, #1a3c5e, #2d6a9f) !important;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+        .navbar-brand { color: white !important; font-weight: 700; }
+        .navbar .nav-link, .navbar span { color: rgba(255,255,255,0.9) !important; }
+
+        /* Sidebar Unificado */
+        .sidebar {
+            background: linear-gradient(180deg, #1a3c5e 0%, #2d6a9f 100%);
+            height: calc(100vh - 56px);
+            width: 260px;
+            position: fixed;
+            top: 56px;
+            left: 0;
+            z-index: 999;
+            padding: 10px 0;
+            overflow-y: auto;
+        }
+        .sidebar .nav-link {
+            color: rgba(255,255,255,0.75) !important;
+            padding: 8px 20px;
+            border-radius: 8px;
+            margin: 2px 10px;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+        .sidebar .nav-link:hover, .sidebar .nav-link.active {
+            background: rgba(255,255,255,0.2) !important;
+            color: white !important;
+        }
+        .sidebar .nav-link i { width: 20px; margin-right: 8px; }
+        .sidebar-title {
+            color: rgba(255,255,255,0.45);
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 12px 20px 2px;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 260px;
+            padding: 76px 30px 30px;
+        }
+
+        /* KPI Cards */
+        .kpi-card {
+            background: #ffffff;
+            border: 2px solid #1a3c5e; 
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            transition: all 0.3s ease;
+            min-height: 140px;
+        }
+        .kpi-card:hover {
+            background-color: #f8f9fa;
+            border-color: #2d6a9f; 
+            transform: translateY(-3px);
+        }
+        .kpi-number {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #1a3c5e;
+            margin-bottom: 2px;
+        }
+        .kpi-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #6c757d;
+            text-transform: uppercase;
+        }
+       
+        /* Quick Cards */
+        .quick-card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        .quick-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+            color: inherit;
+        }
+
+        /* Tables */
+        .table-card {
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+        .table-card .card-header {
+            background: linear-gradient(135deg, #1a3c5e, #2d6a9f);
+            color: white;
+            font-weight: 600;
+            border: none;
+            padding: 15px 20px;
+        }
+
+        .breadcrumb-item, .breadcrumb-item a {
+            color: #6c757d;
+            font-size: 0.85rem;
+        }
+        .breadcrumb-item.active { color: #1a3c5e; font-weight: 600; }
+
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .main-content { margin-left: 0; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg">
+    <div class="container-fluid px-4">
+        <a class="navbar-brand" href="/admin/dashboard">CONVIVIRSMART</a>
+        <div class="ms-auto d-flex align-items-center gap-3">
+            <span class="text-white opacity-75 small">
+                <i class="bi bi-person-circle"></i> Administrador
+            </span>
+            <a href="/inicio" class="btn btn-outline-light btn-sm">
+                <i class="bi bi-box-arrow-right"></i> Salir
+            </a>
+        </div>
+    </div>
+</nav>
+
+<!-- Sidebar Izquierdo (Todos los botones se ven igual) -->
+<div class="sidebar">
+    <p class="sidebar-title">Principal</p>
+    <a href="/admin/dashboard" class="nav-link active">
+        <i class="bi bi-speedometer2"></i> Dashboard
+    </a>
+
+    <p class="sidebar-title">Gestión Individual</p>
+    <a href="/admin/residentes" class="nav-link">
+        <i class="bi bi-people"></i> Residentes
+    </a>
+    <a href="/admin/unidades" class="nav-link">
+        <i class="bi bi-building"></i> Unidades
+    </a>
+    <a href="/admin/pqrs" class="nav-link">
+        <i class="bi bi-chat-left-text"></i> PQRs
+    </a>
+
+    <p class="sidebar-title">Reservas del Sistema</p>
+    <a href="/admin/reservas" class="nav-link">
+        <i class="bi bi-calendar-check"></i> Control Reservas
+    </a>
+
+    <p class="sidebar-title">Infraestructura</p>
+    <a href="/admin/zonas" class="nav-link">
+        <i class="bi bi-grid"></i> Gestionar Zonas
+    </a>
+
+    <p class="sidebar-title">Financiero y Contenido</p>
+    <a href="/admin/cuotas" class="nav-link">
+        <i class="bi bi-cash-coin"></i> Cuotas
+    </a>
+    <a href="/admin/morosos" class="nav-link">
+        <i class="bi bi-exclamation-triangle"></i> Morosos
+    </a>
+    <a href="/admin/noticias" class="nav-link">
+        <i class="bi bi-newspaper"></i> Noticias
+    </a>
+    <a href="/admin/reportes" class="nav-link">
+        <i class="bi bi-file-earmark-bar-graph"></i> Reportes
+    </a>
+
+    <p class="sidebar-title">Configuración</p>
+    <a href="/admin/proveedores" class="nav-link">
+        <i class="bi bi-tools"></i> Proveedores
+    </a>
+    <a href="/admin/configuracion" class="nav-link">
+        <i class="bi bi-gear"></i> Ajustes Sistema
+    </a>
+</div>
+
+<!-- Contenido Principal -->
+<div class="main-content">
+
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/admin/dashboard">Inicio</a></li>
+            <li class="breadcrumb-item active">Dashboard</li>
+        </ol>
+    </nav>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4 class="fw-bold mb-1" style="color: #1a3c5e;">Bienvenido, Administrador</h4>
+        </div>
+        <span class="badge bg-success px-3 py-2">
+            <i class="bi bi-circle-fill me-1" style="font-size:0.6rem;"></i> Sistema activo
+        </span>
+    </div>
+
+	<!-- Indicadores KPI (Ajustados para que los 5 quepan en una sola fila) -->
+	    <div class="row g-2 mb-4">
+	        <!-- Columna con flex: 0 0 20% para que ocupen exactamente 1/5 del ancho cada uno -->
+	        <div class="col-6 col-md" style="flex: 0 0 20%; max-width: 20%;">
+	            <div class="card kpi-card p-2" style="min-height: 120px;">
+	                <div class="kpi-number" th:text="${totalResidentes}">0</div>
+	                <div class="kpi-label">Residentes</div>
+	            </div>
+	        </div>
+	        <div class="col-6 col-md" style="flex: 0 0 20%; max-width: 20%;">
+	            <div class="card kpi-card p-2" style="min-height: 120px;">
+	                <div class="kpi-number" th:text="${pqrsAbiertas}">0</div>
+	                <div class="kpi-label">PQRs</div>
+	            </div>
+	        </div>
+	        <div class="col-6 col-md" style="flex: 0 0 20%; max-width: 20%;">
+	            <div class="card kpi-card p-2" style="min-height: 120px;">
+	                <div class="kpi-number" th:text="${reservasHoy}">0</div>
+	                <div class="kpi-label">Reservas</div>
+	            </div>
+	        </div>
+	        <div class="col-6 col-md" style="flex: 0 0 20%; max-width: 20%;">
+	            <div class="card kpi-card p-2" style="min-height: 120px;">
+	                <div class="kpi-number" th:text="${cuotasPendientes}">0</div>
+	                <div class="kpi-label">Cuotas Pend.</div>
+	            </div>
+	        </div>
+			
+			
+	        <!-- Nueva Tarjeta de Morosos -->
+	        <div class="col-6 col-md" style="flex: 0 0 20%; max-width: 20%;">
+	            <div class="card kpi-card p-2 border-danger" style="min-height: 120px;">
+	                <div class="kpi-number text-danger" th:text="${totalMorosos}">0</div>
+	                <div class="kpi-label">Morosos</div>
+	            </div>
+	        </div>
+	    </div>
+    <!-- Accesos Rápidos Simétricos (8 Botones) -->
+    <h6 class="fw-bold mb-3" style="color:#1a3c5e;">Accesos Rápidos</h6>
+    <div class="row g-3 mb-4">
+		<div class="col-6 col-md-3">
+		    <a href="/admin/asambleas/nueva" class="quick-card card p-3 text-center">
+		        <div class="fw-bold small mt-1">Gestionar Asambleas</div>
+		    </a>
+		</div>
+		<div class="col-6 col-md-3"><a href="/admin/asambleas/listar" class="quick-card card p-3 text-center"><div class="fw-bold small mt-1">Lista de Asambleas</div></a></div>
+        <div class="col-6 col-md-3"><a href="/admin/residentes" class="quick-card card p-3 text-center"><div class="fw-bold small mt-1">Gestionar Residentes</div></a></div>
+        <div class="col-6 col-md-3"><a href="/admin/pqrs" class="quick-card card p-3 text-center"><div class="fw-bold small mt-1">Ver PQRs</div></a></div>
+        <div class="col-6 col-md-3"><a href="/admin/noticias" class="quick-card card p-3 text-center"><div class="fw-bold small mt-1">Publicar Noticia</div></a></div>
+        <div class="col-6 col-md-3"><a href="/admin/reportes" class="quick-card card p-3 text-center"><div class="fw-bold small mt-1">Generar Reporte</div></a></div>
+        <div class="col-6 col-md-3"><a href="/admin/reservas" class="quick-card card p-3 text-center"><div class="fw-bold small mt-1">Ver Reservas</div></a></div>
+        <div class="col-6 col-md-3"><a href="/admin/morosos" class="quick-card card p-3 text-center"><div class="fw-bold small mt-1">Control Morosos</div></a></div>
+        <div class="col-6 col-md-3"><a href="/admin/proveedores" class="quick-card card p-3 text-center"><div class="fw-bold small mt-1">Proveedores</div></a></div>
+        <div class="col-6 col-md-3"><a href="/admin/configuracion" class="quick-card card p-3 text-center"><div class="fw-bold small mt-1">Configuración</div></a></div>
+    </div>
+
+    <!-- Tablas Informativas Recientes -->
+    <div class="row g-3">
+        <div class="col-md-6">
+            <div class="card table-card">
+                <div class="card-header"><i class="bi bi-people me-2"></i>Últimos Residentes Registrados</div>
+                <div class="card-body p-4 text-center text-muted">
+                    <i class="bi bi-people" style="font-size:2rem; opacity:0.3;"></i>
+                    <p class="mt-2 small">Los residentes aparecerán aquí</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card table-card">
+                <div class="card-header"><i class="bi bi-chat-left-text me-2"></i>Últimas PQRs Recibidas</div>
+                <div class="card-body p-4 text-center text-muted">
+                    <i class="bi bi-chat-left-text" style="font-size:2rem; opacity:0.3;"></i>
+                    <p class="mt-2 small">Las PQRs aparecerán aquí</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

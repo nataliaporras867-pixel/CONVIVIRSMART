@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Información - CONVIVIRSMART</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        body { background-color: #f4f7f6; }
+        /* Color del header azul que tienes en tu imagen principal */
+        .navbar { background-color: #1a3a5a; } 
+        .info-card { border-radius: 15px; border: none; background: white; padding: 40px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-top: 50px; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark shadow-sm">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="/">CONVIVIRSMART</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="/">Inicio</a></li>
+				<li class="nav-item"><a class="nav-link active" href="/noticias">Noticias</a></li>
+                <li class="nav-item"><a class="nav-link" href="/zonas-comunes">Zonas Comunes</a></li>
+                <li class="nav-item"><a class="nav-link active" href="/contacto">Contacto</a></li>
+                <li class="nav-item ms-lg-3">
+                    <a class="btn btn-outline-light btn-sm" href="/login">Iniciar Sesión</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="info-card text-center">
+                <h2 class="mb-4 text-primary fw-bold" th:text="${nombreConjunto}">CONVIVIRSMART</h2>
+                <p class="lead text-muted mb-5">Información oficial de contacto y administración del conjunto.</p>
+                
+                <div class="row text-start">
+                    <div class="col-md-6 mb-4">
+                        <p><i class="bi bi-geo-alt-fill text-primary fs-4 me-2"></i> <strong>Dirección:</strong><br> <span th:text="${direccion}"></span></p>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <p><i class="bi bi-telephone-fill text-primary fs-4 me-2"></i> <strong>Teléfono:</strong><br> <span th:text="${telefono}"></span></p>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <p><i class="bi bi-envelope-fill text-primary fs-4 me-2"></i> <strong>Email:</strong><br> <span th:text="${email}"></span></p>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <p><i class="bi bi-clock-fill text-primary fs-4 me-2"></i> <strong>Horario de atención:</strong><br> <span th:text="${horario}"></span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

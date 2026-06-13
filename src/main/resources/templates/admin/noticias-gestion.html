@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>CONVIVIRSMART - Gestión de Noticias</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --sidebar-bg:  #1a3c5e;
+            --sidebar-hover: #2d6a9f;
+            --card-header-bg: #2b679c;
+            --body-bg: #f4f6f9;
+            --primary-btn:  #1a3c5e;
+        }
+
+        body {
+            background-color: var(--body-bg);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* Barra Lateral (Sidebar) */
+        .sidebar {
+            background-color: var(--sidebar-bg);
+            min-height: 100vh;
+            color: white;
+            padding-top: 20px;
+        }
+        .sidebar .brand-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            padding: 10px 20px;
+            letter-spacing: 1px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 20px;
+        }
+        .sidebar .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        .sidebar .nav-link:hover, .sidebar .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-left: 4px solid var(--sidebar-hover);
+        }
+        .sidebar .section-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: rgba(255,255,255,0.4);
+            padding: 15px 20px 5px 20px;
+            font-weight: bold;
+        }
+
+        /* Barra Superior (Navbar) */
+        .top-navbar {
+            background-color: var(--sidebar-bg);
+            color: white;
+            padding: 12px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Tarjetas de Contenedor */
+        .custom-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border: none;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        .custom-card-header {
+            background-color: var(--card-header-bg);
+            color: white;
+            padding: 15px 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Formulario e Inputs */
+        .form-control {
+            border-radius: 8px;
+            border: 1px solid #ced4da;
+            padding: 10px 15px;
+        }
+        .form-control:focus {
+            box-shadow: 0 0 0 0.2rem rgba(43, 103, 156, 0.25);
+            border-color: var(--card-header-bg);
+        }
+        .btn-guardar {
+            background-color: var(--primary-btn);
+            color: white;
+            border-radius: 20px;
+            padding: 10px 30px;
+            font-weight: 600;
+            width: 100%;
+            border: none;
+            transition: background 0.3s;
+        }
+        .btn-guardar:hover {
+            background-color: #0f273f;
+            color: white;
+        }
+
+        /* Tabla Estilizada */
+        .table th {
+            color: #555;
+            font-weight: 600;
+            border-bottom: 2px solid #dee2e6;
+        }
+        .table td {
+            vertical-align: middle;
+            padding: 12px 10px;
+        }
+        
+        .badge-activo {
+            background-color: var(--card-header-bg);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+        }
+
+        /* Miniatura de la Imagen en Gestión */
+        .img-thumb-preview {
+            width: 60px;
+            height: 45px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 1px solid #dee2e6;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-navbar">
+        <span class="fs-5 fw-bold">CONVIVIRSMART</span>
+        <div class="d-flex align-items-center gap-3">
+            <span><i class="bi bi-person-circle"></i> Administrador</span>
+            <a href="/logout" class="btn btn-outline-light btn-sm"><i class="bi bi-box-arrow-right"></i> Salir</a>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-2 sidebar px-0">
+                <div class="section-title">Principal</div>
+                <a th:href="@{/admin/dashboard}" class="nav-link"><i class="bi bi-speedometer2"></i> Dashboard</a>
+                
+                <div class="section-title">Gestión</div>
+                <a th:href="@{/admin/residentes}" class="nav-link"><i class="bi bi-people"></i> Residentes</a>
+                <a th:href="@{/admin/unidades}" class="nav-link"><i class="bi bi-building"></i> Unidades</a>
+                <a th:href="@{/admin/pqrs}" class="nav-link"><i class="bi bi-chat-left-text"></i> PQRs</a>
+                <a th:href="@{/admin/zonas}" class="nav-link"><i class="bi bi-calendar-check"></i> Reservas y Zonas</a>
+                <a th:href="@{/admin/noticias}" class="nav-link active"><i class="bi bi-newspaper"></i> Noticias</a>
+                
+                <div class="section-title">Financiero</div>
+                <a th:href="@{/admin/cuotas}" class="nav-link"><i class="bi bi-cash-stack"></i> Cuotas</a>
+                <a th:href="@{/admin/morosos}" class="nav-link"><i class="bi bi-exclamation-triangle"></i> Morosos</a>
+                <a th:href="@{/admin/reportes}" class="nav-link"><i class="bi bi-file-earmark-bar-graph"></i> Reportes</a>
+            </div>
+
+            <div class="col-md-10 p-4">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="#">Inicio</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Noticias</li>
+                    </ol>
+                </nav>
+
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 class="fw-bold m-0">Gestión de Noticias y Comunicados</h2>
+                    <span class="badge-activo"><i class="bi bi-circle-fill fs-7 me-1"></i> Panel de Control</span>
+                </div>
+
+                <div class="row">
+                    <!-- Formulario de Creación -->
+                    <div class="col-md-4">
+                        <div class="custom-card">
+                            <div class="custom-card-header">
+                                <i class="bi bi-plus-circle"></i> Nueva Noticia o Comunicado
+                            </div>
+                            <div class="card-body p-4">
+                                <!-- Modificado con enctype para soportar subida de imágenes -->
+                                <form th:action="@{/admin/noticias/guardar}" th:object="${nuevaNoticia}" method="post" enctype="multipart/form-data">
+                                    <div class="mb-3">
+                                        <label class="form-label fw-semibold">Título de la noticia</label>
+                                        <input type="text" th:field="*{titulo}" class="form-control" placeholder="Ej: Mantenimiento de Ascensores" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label fw-semibold">Contenido del comunicado</label>
+                                        <textarea th:field="*{contenido}" class="form-control" rows="4" placeholder="Escribe el cuerpo de la noticia aquí..." required></textarea>
+                                    </div>
+                                    <!-- Nuevo Campo para la Imagen adjunta -->
+                                    <div class="mb-3">
+                                        <label class="form-label fw-semibold"><i class="bi bi-image me-1"></i> Imagen Destacada</label>
+                                        <input type="file" name="file" class="form-control" accept="image/*">
+                                        <div class="form-text">Formatos recomendados: JPG o PNG.</div>
+                                    </div>
+                                    <button type="submit" class="btn btn-guardar mt-2">Publicar Comunicado</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tabla de Registros -->
+                    <div class="col-md-8">
+                        <div class="custom-card">
+                            <div class="custom-card-header">
+                                <i class="bi bi-grid-3x3-gap"></i> Noticias Publicadas
+                            </div>
+                            <div class="card-body p-0">
+                                <table class="table table-hover m-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th class="ps-4" style="width: 80px;">Vista</th>
+                                            <th>Título</th>
+                                            <th>Fecha Publicación</th>
+                                            <th class="text-center">Acción</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+										<tr th:each="n : ${listaNoticias}">
+											<td class="ps-4">
+											    <img th:if="${n.urlImagen != null and n.urlImagen != ''}" 
+											         th:src="@{${n.urlImagen}}" 
+											         class="img-thumb-preview" alt="Imagen noticia" 
+											         onerror="this.style.display='none'"> <div th:if="${n.urlImagen == null or n.urlImagen == ''}" 
+											         class="img-thumb-preview bg-light d-flex align-items-center justify-content-center text-muted">
+											        <i class="bi bi-image" style="font-size: 1.1rem;"></i>
+											    </div>
+											</td>
+										    <td class="fw-semibold text-secondary text-capitalize" th:text="${n.titulo}"></td>
+										    <td th:text="${#temporals.format(n.fechaPublicacion, 'dd/MM/yyyy hh:mm a')}"></td>
+										    <td class="text-center">
+										        <a th:href="@{/admin/noticias/eliminar/{id}(id=${n.id})}" 
+										           class="text-danger fs-5" 
+										           onclick="return confirm('¿Estás seguro de que deseas eliminar este comunicado?')">
+										            <i class="bi bi-trash"></i>
+										        </a>
+										    </td>
+										</tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div> 
+            </div> 
+        </div> 
+    </div> 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

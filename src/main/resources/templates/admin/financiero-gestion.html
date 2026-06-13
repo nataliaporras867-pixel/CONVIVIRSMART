@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestión Financiera - CONVIVIRSMART</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <style>
+        body { background-color: #f0f2f5; font-family: 'Segoe UI', sans-serif; }
+        .main-content { padding: 40px; }
+        .table-card { border: none; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); overflow: hidden; background: white; margin-bottom: 20px; }
+        .card-header { background: #1a3c5e !important; color: white; padding: 15px 20px; font-weight: 600; }
+    </style>
+</head>
+<body>
+
+<div class="main-content">
+    <div class="mb-4">
+        <a href="/admin/dashboard" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Volver al Panel
+        </a>
+    </div>
+
+    <h4 class="fw-bold mb-4" style="color: #1a3c5e;">Gestión Financiera</h4>
+
+    <div class="card p-4 table-card">
+        <h5 class="mb-3 text-primary"><i class="bi bi-cash-coin"></i> Generar Cuotas Masivas</h5>
+        <div class="row g-3">
+            <div class="col-md-3"><input type="number" id="valorCuota" class="form-control" placeholder="Valor ($)"></div>
+            <div class="col-md-3"><input type="text" id="mesCuota" class="form-control" placeholder="Ej: JUNIO-2026"></div>
+            <div class="col-md-4"><input type="text" id="descCuota" class="form-control" placeholder="Descripción"></div>
+            <div class="col-md-2"><button onclick="generarCuotas()" class="btn btn-primary w-100">Generar</button></div>
+        </div>
+    </div>
+
+    <div class="table-card">
+        <div class="card-header">Cuotas Registradas</div>
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Residente</th><th>Concepto</th><th>Mes</th><th>Valor</th><th>Estado</th><th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaCuotas">
+                    <tr><td colspan="6" class="text-center">Cargando...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    const BASE_URL = '/api/cuotas';
+
+    // Carga la tabla automáticamente sin intervención del usuario
+    function cargarCuotas() {
+        fetch(BASE_URL)
+            .then(res => res.json())
+            .then(data => {
+                const tbody = document.getElementById('tablaCuotas');
+                tbody.innerHTML = data.length === 0 
+                    ? '<tr><td colspan="6" class="text-center">No hay cuotas registradas</td></tr>'
+                    : data.map(c => `
+                    <tr>
+                        <td class="fw-bold">${c.residenteNombre || 'Sin nombre'}</td>
+                        <td>${c.descripcion || '-'}</td>
+                        <td>${c.mes}</td>
+                        <td>$${c.valor.toLocaleString()}</td>
+                        <td><span class="badge ${c.estado === 'PAGADO' ? 'bg-success' : 'bg-warning'}">${c.estado || 'PENDIENTE'}</span></td>
+                        <td>
+                            <button onclick="confirmarPago('${c.id}')" class="btn btn-sm btn-success"><i class="bi bi-check-circle"></i></button>
+                            <button onclick="eliminarCuota('${c.id}')" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
+                        </td>
+                    </tr>
+                `).join('');
+            });
+    }
+
+    function generarCuotas() {
+        const v = document.getElementById('valorCuota').value;
+        const m = document.getElementById('mesCuota').value;
+        const d = document.getElementById('descCuota').value;
+        
+        if(!v || !m) return; 
+
+        fetch(`${BASE_URL}/generar-mensuales?valor=${v}&mes=${m}&descripcion=${d}`, { method: 'POST' })
+            .then(() => cargarCuotas()); 
+    }
+
+    function confirmarPago(id) {
+        fetch(`${BASE_URL}/${id}/confirmar-pago`, { method: 'POST' })
+            .then(() => cargarCuotas());
+    }
+
+    function eliminarCuota(id) {
+        fetch(`${BASE_URL}/${id}`, { method: 'DELETE' })
+            .then(() => cargarCuotas());
+    }
+
+    // Inicialización automática
+    document.addEventListener("DOMContentLoaded", cargarCuotas);
+</script>
+
+</body>
+</html>
