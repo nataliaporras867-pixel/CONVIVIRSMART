@@ -1,6 +1,5 @@
 package com.convivir.app.config;
 
-import java.nio.file.Paths;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -10,10 +9,12 @@ public class MvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // Vincula el endpoint web /uploads/** con la carpeta física uploads/ de la raíz
-        String pathName = Paths.get("uploads").toAbsolutePath().toUri().toString();
-        
+        // Detectamos el sistema operativo para hacer el puente web -> carpeta física
+        String contexPath = System.getProperty("os.name").toLowerCase().contains("win")
+                ? "file:///C:/convivir_uploads/"
+                : "file:/opt/render/project/src/uploads/";
+
         registry.addResourceHandler("/uploads/**")
-                .addResourceLocations(pathName);
+                .addResourceLocations(contexPath);
     }
 }

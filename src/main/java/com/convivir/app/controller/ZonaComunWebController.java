@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.convivir.app.model.ZonaComun;
 import com.convivir.app.service.ZonaComunService;
 
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -20,44 +21,46 @@ public class ZonaComunWebController {
 
     private final ZonaComunService zonaComunService;
     
-    // Unificamos la ruta a la carpeta externa raíz de Render
-
- // Reemplaza la línea vieja por esta ruta absoluta e inequívoca:
-    private final String UPLOAD_DIR = System.getProperty("user.dir") + java.io.File.separator + "uploads" + java.io.File.separator;
+    // RUTA ABSOLUTA AUTOMÁTICA: Elige C:/ en Windows y la ruta fija del proyecto en Render (Linux)
+    private final String UPLOAD_DIR = System.getProperty("os.name").toLowerCase().contains("win") 
+            ? "C:/convivir_uploads/" 
+            : "/opt/render/project/src/uploads/";
 
     public ZonaComunWebController(ZonaComunService zonaComunService) {
         this.zonaComunService = zonaComunService;
     }
 
-    // CORRECCIÓN: Ajustado para que coincida exactamente con el menú Sidebar de tu HTML
+    // 1. Vista de administración sincronizada con el menú Sidebar
     @GetMapping("/admin/zonas-comunes")
     public String gestionarZonas(Model model) {
         model.addAttribute("listaZonas", zonaComunService.listarTodas());
         model.addAttribute("nuevaZona", new ZonaComun());
-        return "admin/gestion-zonas"; // Retorna tu plantilla HTML
+        return "admin/gestion-zonas";
     }
 
-    // CORRECCIÓN: Ruta de guardado unificada
+    // 2. Procesamiento del formulario con almacenamiento en disco externo
     @PostMapping("/admin/zonas/guardar")
     public String guardarZona(@ModelAttribute("nuevaZona") ZonaComun zona, 
                               @RequestParam(value = "file", required = false) MultipartFile file) {
         try {
             if (file != null && !file.isEmpty()) {
-                System.out.println("¡Archivo detectado en Zona Comun!: " + file.getOriginalFilename());
-                
-                // Generamos un nombre único para evitar duplicados
+                // Generamos un nombre único basado en milisegundos para evitar conflictos
                 String nombreArchivo = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-                Path path = Paths.get(UPLOAD_DIR + nombreArchivo);
                 
-                // Crea la carpeta externa 'uploads' si no existe en el disco duro de Render
-                Files.createDirectories(path.getParent());
+                // Nos aseguramos de que la carpeta física exista en el sistema operativo
+                File directorio = new File(UPLOAD_DIR);
+                if (!directorio.exists()) {
+                    directorio.mkdirs();
+                }
+                
+                // Escribimos los bytes del archivo en la ruta absoluta elegida
+                Path path = Paths.get(UPLOAD_DIR + nombreArchivo);
                 Files.write(path, file.getBytes());
                 
-                // Guardamos usando la ruta mapeada en MvcConfig
+                // Guardamos en la base de datos la estructura virtual correspondiente al MvcConfig
                 zona.setImagenUrl("/uploads/" + nombreArchivo);
             } else {
-                System.out.println("No se detectó un archivo nuevo para la Zona Común.");
-                // Si es edición y no se sube un archivo nuevo, mantenemos la imagen existente
+                // Si estamos editando y no se seleccionó un archivo nuevo, preservamos la imagen anterior
                 if (zona.getId() != null && !zona.getId().isEmpty()) {
                     ZonaComun zonaExistente = zonaComunService.buscarPorId(zona.getId());
                     if (zonaExistente != null) {
@@ -69,15 +72,15 @@ public class ZonaComunWebController {
             zonaComunService.guardar(zona);
             
         } catch (Exception e) {
-            System.err.println("Error fatal al procesar la imagen de zona común: " + e.getMessage());
+            System.err.println("Error crítico al procesar la imagen de zona común: " + e.getMessage());
             return "redirect:/admin/zonas-comunes?errorImage";
         }
         
-        // CORRECCIÓN: Retorna '?successZona' para activar la alerta verde que tienes en tu HTML
+        // Retorna con el parámetro correcto para disparar la alerta de éxito en tu HTML
         return "redirect:/admin/zonas-comunes?successZona";
     }
 
-    // CORRECCIÓN: Rutas de edición y eliminación actualizadas para redireccionar al lugar correcto
+    // 3. Acción de edición cargando los datos en la misma plantilla
     @GetMapping("/admin/zonas/editar/{id}")
     public String editarZona(@PathVariable("id") String id, Model model) {
         ZonaComun zona = zonaComunService.buscarPorId(id);
@@ -89,12 +92,14 @@ public class ZonaComunWebController {
         return "redirect:/admin/zonas-comunes";
     }
 
+    // 4. Eliminación física lógica del registro de la zona
     @GetMapping("/admin/zonas/eliminar/{id}")
     public String eliminarZona(@PathVariable("id") String id) {
         zonaComunService.eliminar(id);
         return "redirect:/admin/zonas-comunes?deleted";
     }
 
+    // 5. Vista pública para los residentes de la copropiedad
     @GetMapping("/zonas-comunes")
     public String verZonasPublicas(Model model) {
         model.addAttribute("zonas", zonaComunService.listarTodas());
