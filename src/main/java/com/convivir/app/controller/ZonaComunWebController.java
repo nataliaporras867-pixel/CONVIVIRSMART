@@ -21,7 +21,9 @@ public class ZonaComunWebController {
     private final ZonaComunService zonaComunService;
     
     // Unificamos la ruta a la carpeta externa raíz de Render
-    private final String UPLOAD_DIR = "uploads/";
+
+ // Reemplaza la línea vieja por esta ruta absoluta e inequívoca:
+    private final String UPLOAD_DIR = System.getProperty("user.dir") + java.io.File.separator + "uploads" + java.io.File.separator;
 
     public ZonaComunWebController(ZonaComunService zonaComunService) {
         this.zonaComunService = zonaComunService;
