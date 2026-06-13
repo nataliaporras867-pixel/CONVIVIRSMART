@@ -137,7 +137,7 @@
             <div class="card zona-card h-100">
                 
                 <div style="height: 140px; overflow: hidden; position: relative;">
-                    <img th:if="${z.imagenUrl != null}" th:src="@{${z.imagenUrl}}" class="w-100 h-100" style="object-fit: cover;" alt="Zona">
+                    <img th:if="${z.imagenUrl != null}" th:src="${z.imagenUrl}" class="w-100 h-100" style="object-fit: cover;" alt="Zona">
                     
                     <div th:unless="${z.imagenUrl != null}" class="icon-box">
                         <i th:if="${#strings.contains(#strings.toLowerCase(z.nombre), 'cancha')}" class="bi bi-dribbble"></i>

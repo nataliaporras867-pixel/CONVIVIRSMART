@@ -10,22 +10,23 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import com.convivir.app.model.ZonaComun;
 import com.convivir.app.service.ZonaComunService;
-import com.convivir.app.service.UploadFileService; 
-import java.io.IOException;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @Controller
 public class ZonaComunWebController {
 
     private final ZonaComunService zonaComunService;
-    private final UploadFileService uploadFileService; 
-
     
-    public ZonaComunWebController(ZonaComunService zonaComunService, UploadFileService uploadFileService) {
+    // 1. Unificamos la ruta a la carpeta externa raíz
+    private final String UPLOAD_DIR = "uploads/";
+
+    public ZonaComunWebController(ZonaComunService zonaComunService) {
         this.zonaComunService = zonaComunService;
-        this.uploadFileService = uploadFileService;
     }
 
-    
     @GetMapping("/admin/zonas")
     public String gestionarZonas(Model model) {
         model.addAttribute("listaZonas", zonaComunService.listarTodas());
@@ -33,19 +34,23 @@ public class ZonaComunWebController {
         return "admin/gestion-zonas";
     }
 
-    
     @PostMapping("/admin/zonas/guardar")
     public String guardarZona(@ModelAttribute("nuevaZona") ZonaComun zona, 
                               @RequestParam("file") MultipartFile file) {
         try {
-            
-            String nombreImagen = uploadFileService.saveImage(file);
-            
-            if (nombreImagen != null) {
+            if (file != null && !file.isEmpty()) {
+                // Generamos un nombre único para evitar duplicados
+                String nombreArchivo = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+                Path path = Paths.get(UPLOAD_DIR + nombreArchivo);
                 
-                zona.setImagenUrl("/images/uploads/" + nombreImagen);
+                // Crea la carpeta externa 'uploads' si no existe
+                Files.createDirectories(path.getParent());
+                Files.write(path, file.getBytes());
+                
+                // 2. CORRECCIÓN: Guardamos usando la ruta mapeada en MvcConfig
+                zona.setImagenUrl("/uploads/" + nombreArchivo);
             } else {
-                
+                // Si no se sube un archivo nuevo, mantenemos la imagen existente
                 if (zona.getId() != null && !zona.getId().isEmpty()) {
                     ZonaComun zonaExistente = zonaComunService.buscarPorId(zona.getId());
                     if (zonaExistente != null) {
@@ -54,19 +59,16 @@ public class ZonaComunWebController {
                 }
             }
             
-           
             zonaComunService.guardar(zona);
             
-        } catch (IOException e) {
-            e.printStackTrace();
-            
+        } catch (Exception e) {
+            System.err.println("Error al procesar la imagen de zona común: " + e.getMessage());
             return "redirect:/admin/zonas?errorImage";
         }
         
         return "redirect:/admin/zonas?success";
     }
 
-    
     @GetMapping("/admin/zonas/editar/{id}")
     public String editarZona(@PathVariable("id") String id, Model model) {
         ZonaComun zona = zonaComunService.buscarPorId(id);
@@ -78,7 +80,6 @@ public class ZonaComunWebController {
         return "redirect:/admin/zonas";
     }
 
-    
     @GetMapping("/admin/zonas/eliminar/{id}")
     public String eliminarZona(@PathVariable("id") String id) {
         zonaComunService.eliminar(id);
