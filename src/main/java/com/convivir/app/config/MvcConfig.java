@@ -10,7 +10,7 @@ public class MvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // Esto expone la carpeta "uploads" que estará en la raíz de tu proyecto
+        // Vincula el endpoint web /uploads/** con la carpeta física uploads/ de la raíz
         String pathName = Paths.get("uploads").toAbsolutePath().toUri().toString();
         
         registry.addResourceHandler("/uploads/**")

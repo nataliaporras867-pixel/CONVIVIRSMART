@@ -267,6 +267,7 @@
 							<tbody id="tablaZonas">
 							    <tr th:each="z : ${listaZonas}">
                                     <td class="ps-4">
+                                        <!-- RUTA DE IMAGEN VERIFICADA DIRECTA DE BASE DE DATOS -->
                                         <img th:if="${z.imagenUrl != null}" th:src="${z.imagenUrl}" class="img-thumb-preview" alt="Zona">
                                         <div th:if="${z.imagenUrl == null}" class="img-thumb-preview bg-light d-flex align-items-center justify-content-center text-muted">
                                             <i class="bi bi-image" style="font-size: 1rem;"></i>
