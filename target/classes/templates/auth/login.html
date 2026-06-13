@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CONVIVIRSMART - Iniciar Sesión</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #f0f2f5; /* Un tono gris claro para que resalte la tarjeta blanca */
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+        }
+        .login-card {
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .login-header {
+            background: linear-gradient(135deg, #1a3c5e, #2d6a9f);
+            color: white;
+            border-radius: 16px 16px 0 0;
+            padding: 30px;
+            text-align: center;
+        }
+        .btn-login {
+            background: linear-gradient(135deg, #1a3c5e, #2d6a9f);
+            color: white;
+            border: none;
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 8px;
+        }
+        .btn-login:hover { opacity: 0.9; color: white; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card login-card">
+                <div class="login-header">
+                    <h3 class="mb-1">CONVIVIRSMART</h3>
+                    <p class="mb-0 opacity-75">Portal de Gestión Residencial</p>
+                </div>
+                <div class="card-body p-4">
+
+                    <div th:if="${param.error}" class="alert alert-danger text-center">
+                        Correo o contraseña incorrectos.
+                    </div>
+
+                    <div th:if="${param.logout}" class="alert alert-success text-center">
+                        Sesión cerrada correctamente.
+                    </div>
+
+                    <div th:if="${param.registro}" class="alert alert-success text-center">
+                        Cuenta creada. Ya puedes iniciar sesión.
+                    </div>
+
+                    <div th:if="${param.recuperado}" class="alert alert-success text-center fw-bold">
+                        🔒 ¡Contraseña actualizada! Ya puedes ingresar con tu nueva clave.
+                    </div>
+
+                    <form th:action="@{/login}" method="post">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Correo electrónico</label>
+                            <input type="email"
+                                   name="correo"
+                                   class="form-control form-control-lg"
+                                   placeholder="correo@ejemplo.com"
+                                   required autofocus>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Contraseña</label>
+                            <input type="password"
+                                   name="password"
+                                   class="form-control form-control-lg"
+                                   placeholder="••••••••"
+                                   required>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-login btn-lg">
+                                Iniciar Sesión
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="text-center mt-3">
+                        <a th:href="@{/recuperar}" class="text-muted small d-block mb-2 text-decoration-none">
+                            ¿Olvidaste tu contraseña?
+                        </a>
+                        <span class="text-muted small">¿No tienes cuenta?</span>
+                        <a th:href="@{/registro}" class="ms-1 small fw-bold text-decoration-none">
+                            Regístrate aquí
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

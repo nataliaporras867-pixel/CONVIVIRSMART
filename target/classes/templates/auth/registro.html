@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CONVIVIRSMART - Registro</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 30px 0;
+        }
+        .registro-card {
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .registro-header {
+            background: linear-gradient(135deg, #1a3c5e, #2d6a9f);
+            color: white;
+            border-radius: 16px 16px 0 0;
+            padding: 25px;
+            text-align: center;
+        }
+        .btn-registro {
+            background: linear-gradient(135deg, #1a3c5e, #2d6a9f);
+            color: white;
+            border: none;
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 8px;
+        }
+        .btn-registro:hover {
+            opacity: 0.9;
+            color: white;
+        }
+        .rol-card {
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        .rol-card:hover {
+            border-color: #2d6a9f;
+            background: #f0f7ff;
+        }
+        .rol-card input[type="radio"]:checked + label {
+            color: #1a3c5e;
+            font-weight: bold;
+        }
+        .rol-card.selected {
+            border-color: #1a3c5e;
+            background: #e8f0fe;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-7">
+            <div class="card registro-card">
+                <div class="registro-header">
+                    <h3 class="mb-1"> CONVIVIRSMART</h3>
+                    <p class="mb-0 opacity-75">Crear nueva cuenta</p>
+                </div>
+                <div class="card-body p-4">
+
+                    <!-- Mensaje de error -->
+                    <div th:if="${error}"
+                         class="alert alert-danger"
+                         th:text="${error}">
+                    </div>
+
+                    <form th:action="@{/registro}"
+                          th:object="${registroRequest}"
+                          method="post">
+
+                        <!-- Nombres y Apellidos -->
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Nombres</label>
+                                <input type="text"
+                                       th:field="*{nombres}"
+                                       class="form-control"
+                                       
+                                       required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Apellidos</label>
+                                <input type="text"
+                                       th:field="*{apellidos}"
+                                       class="form-control"
+                                       
+                                       required>
+                            </div>
+                        </div>
+
+                        <!-- Correo -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Correo electrónico</label>
+                            <input type="email"
+                                   th:field="*{correo}"
+                                   class="form-control"
+                                   
+                                   required>
+                        </div>
+
+                        <!-- Teléfono -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Teléfono</label>
+                            <input type="tel"
+                                   th:field="*{telefono}"
+                                   class="form-control"
+                                  
+                                   required>
+                        </div>
+
+                        <!-- Contraseñas -->
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Contraseña</label>
+                                <input type="password"
+                                       th:field="*{password}"
+                                       class="form-control"
+                                       
+                                       required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Confirmar Contraseña</label>
+                                <input type="password"
+                                       th:field="*{confirmarPassword}"
+                                       class="form-control"
+                                      
+                                       required>
+                            </div>
+                        </div>
+
+                        <!-- Selección de Rol -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Selecciona tu rol</label>
+                            <div class="row g-2">
+
+                                <div class="col-6 col-md-4">
+                                    <div class="rol-card" onclick="seleccionarRol(this, 'RESIDENTE')">
+                                      
+                                        <div class="fw-bold">Residente</div>
+                                       
+                                    </div>
+                                </div>
+
+                                <div class="col-6 col-md-4">
+                                    <div class="rol-card" onclick="seleccionarRol(this, 'PROPIETARIO')">
+                                        
+                                        <div class="fw-bold">Propietario</div>
+                                        
+                                    </div>
+                                </div>
+
+                                <div class="col-6 col-md-4">
+                                    <div class="rol-card" onclick="seleccionarRol(this, 'PORTERO')">
+                                      
+                                        <div class="fw-bold">Portero</div>
+                                        
+                                    </div>
+                                </div>
+
+                                <div class="col-6 col-md-4">
+                                    <div class="rol-card" onclick="seleccionarRol(this, 'PROVEEDOR')">
+                                      
+                                        <div class="fw-bold">Proveedor</div>
+                                        
+                                    </div>
+                                </div>
+
+                                <div class="col-6 col-md-4">
+                                    <div class="rol-card" onclick="seleccionarRol(this, 'ADMIN')">
+                                      
+                                        <div class="fw-bold">Administrador</div>
+                                        
+                                    </div>
+                                </div>
+
+                            </div>
+                            <!-- Campo oculto que guarda el rol seleccionado -->
+                            <input type="hidden" th:field="*{rol}" id="rolSeleccionado">
+                            <div id="rolError" class="text-danger small mt-2" style="display:none;">
+                                Por favor selecciona un rol
+                            </div>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit"
+                                    class="btn btn-registro btn-lg"
+                                    onclick="return validarRol()">
+                                Crear Cuenta
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="text-center mt-3">
+                        <span class="text-muted">¿Ya tienes cuenta?</span>
+                        <a href="/login" class="ms-1 fw-bold">Iniciar Sesión</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function seleccionarRol(elemento, rol) {
+        // Quitar selección anterior
+        document.querySelectorAll('.rol-card').forEach(card => {
+            card.classList.remove('selected');
+        });
+        // Marcar el seleccionado
+        elemento.classList.add('selected');
+        // Guardar en el campo oculto
+        document.getElementById('rolSeleccionado').value = rol;
+    }
+
+    function validarRol() {
+        const rol = document.getElementById('rolSeleccionado').value;
+        if (!rol) {
+            document.getElementById('rolError').style.display = 'block';
+            return false;
+        }
+        return true;
+    }
+</script>
+</body>
+</html>

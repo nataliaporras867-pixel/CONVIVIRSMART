@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Asambleas</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+<style>
+body{background:#f0f2f5;font-family:'Segoe UI',sans-serif;}
+.navbar{background:linear-gradient(135deg,#1a3c5e,#2d6a9f)!important;position:fixed;top:0;width:100%;z-index:1000;}
+.sidebar{background:linear-gradient(180deg,#1a3c5e,#2d6a9f);height:calc(100vh - 56px);width:260px;position:fixed;top:56px;left:0;z-index:999;padding:10px 0;}
+.sidebar .nav-link{color:rgba(255,255,255,.75)!important;padding:12px 20px;}
+.sidebar .nav-link.active{background:rgba(255,255,255,.2)!important;color:#fff!important;font-weight:bold;}
+.main-content{margin-left:260px;padding:80px 30px 30px;}
+@media(max-width:768px){.sidebar{display:none;}.main-content{margin-left:0;}}
+</style></head>
+<body>
+<nav class="navbar"><div class="container-fluid px-4">
+    <a class="navbar-brand text-white fw-bold" href="/admin/dashboard">🏢 CONVIVIRSMART</a>
+    <div class="ms-auto"><a class="btn btn-outline-light btn-sm" href="/logout"><i class="bi bi-box-arrow-right"></i> Salir</a></div>
+</div></nav>
+<div class="sidebar">
+    <a href="/admin/dashboard" class="nav-link"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a>
+    <a href="/admin/asambleas/listar" class="nav-link active"><i class="bi bi-megaphone me-2"></i>Asambleas</a>
+    <a href="/admin/proveedores" class="nav-link"><i class="bi bi-truck me-2"></i>Proveedores</a>
+    <a href="/admin/servicios" class="nav-link"><i class="bi bi-tools me-2"></i>Servicios</a>
+    <a href="/admin/solicitudes-ingreso" class="nav-link"><i class="bi bi-door-open me-2"></i>Solicitudes</a>
+    <a href="/admin/visitantes" class="nav-link"><i class="bi bi-people me-2"></i>Visitantes</a>
+</div>
+<div class="main-content">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold mb-0" style="color:#1a3c5e;"><i class="bi bi-megaphone"></i> Gestión de Asambleas</h4>
+        <a href="/admin/asambleas/nueva" class="btn btn-primary"><i class="bi bi-plus-circle"></i> Nueva Asamblea</a>
+    </div>
+    <div th:if="${exito}" class="alert alert-success" th:text="${exito}"></div>
+    <div class="card border-0 shadow-sm rounded-3">
+        <div class="card-body p-0">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light"><tr><th>Título</th><th>Tema</th><th>Fecha</th><th>Estado</th><th class="text-center">Acciones</th></tr></thead>
+                <tbody>
+                <tr th:each="a : ${asambleas}">
+                    <td class="fw-bold" th:text="${a.titulo}"></td>
+                    <td th:text="${a.tema}"></td>
+                    <td th:text="${#temporals.format(a.fechaHora,'dd/MM/yyyy HH:mm')}"></td>
+                    <td>
+                        <span th:if="${a.abierta}" class="badge bg-success">Abierta</span>
+                        <span th:unless="${a.abierta}" class="badge bg-secondary">Cerrada</span>
+                    </td>
+                    <td class="text-center d-flex gap-1 justify-content-center">
+                        <a th:href="'/admin/asambleas/resultados/' + ${a.id}" class="btn btn-outline-info btn-sm">
+                            <i class="bi bi-bar-chart"></i> Resultados
+                        </a>
+                        <form th:if="${a.abierta}" th:action="'/admin/asambleas/cerrar/' + ${a.id}" method="post" class="d-inline">
+                            <button class="btn btn-outline-warning btn-sm"><i class="bi bi-lock"></i> Cerrar</button>
+                        </form>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(asambleas)}">
+                    <td colspan="5" class="text-center text-muted p-4">No hay asambleas.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body></html>

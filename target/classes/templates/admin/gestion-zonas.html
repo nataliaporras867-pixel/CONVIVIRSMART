@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CONVIVIRSMART - Reservas y Zonas Comunes</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root { --color-primary: #1a3c5e; --color-secondary: #2d6a9f; }
+        body { background-color: #f0f2f5; }
+
+        /* Navbar Superior */
+        .navbar {
+            background: linear-gradient(135deg, #1a3c5e, #2d6a9f) !important;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+        .navbar-brand { color: white !important; font-weight: 700; }
+        .navbar .nav-link, .navbar span { color: rgba(255,255,255,0.9) !important; }
+
+        /* Sidebar */
+        .sidebar {
+            background: linear-gradient(180deg, #1a3c5e 0%, #2d6a9f 100%);
+            min-height: 100vh;
+            width: 260px;
+            position: fixed;
+            top: 56px;
+            left: 0;
+            z-index: 999;
+            padding: 20px 0;
+            overflow-y: auto;
+        }
+        .sidebar .nav-link {
+            color: rgba(255,255,255,0.75) !important;
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin: 2px 10px;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+        .sidebar .nav-link:hover, .sidebar .nav-link.active {
+            background: rgba(255,255,255,0.2);
+            color: white !important;
+        }
+        .sidebar .nav-link i { width: 20px; margin-right: 8px; }
+        .sidebar-title {
+            color: rgba(255,255,255,0.45);
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 15px 20px 5px;
+        }
+
+        /* Contenido Principal */
+        .main-content {
+            margin-left: 260px;
+            padding: 76px 30px 30px;
+        }
+
+        /* Tarjetas Estilo Unificado */
+        .table-card {
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            overflow: hidden;
+            background: #ffffff;
+        }
+        .table-card .card-header {
+            background: linear-gradient(135deg, #1a3c5e, #2d6a9f);
+            color: white;
+            font-weight: 600;
+            border: none;
+            padding: 15px 20px;
+        }
+
+        .breadcrumb-item, .breadcrumb-item a {
+            color: #6c757d;
+            font-size: 0.85rem;
+        }
+        .breadcrumb-item.active { color: #1a3c5e; font-weight: 600; }
+
+        /* Badges estilizados */
+        .badge-activo { background-color: #198754; color: white; }
+        .badge-inactivo { background-color: #6c757d; color: white; }
+        .badge-pendiente { background-color: #ffc107; color: #000; font-weight: 600; }
+        .badge-aprobada { background-color: #198754; color: white; font-weight: 600; }
+        .badge-rechazada { background-color: #dc3545; color: white; font-weight: 600; }
+
+        /* Miniaturas de Zonas Comunes */
+        .img-thumb-preview {
+            width: 60px;
+            height: 42px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 1px solid #dee2e6;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .main-content { margin-left: 0; }
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg">
+    <div class="container-fluid px-4">
+        <a class="navbar-brand" href="/admin/dashboard">CONVIVIRSMART</a>
+        <div class="ms-auto d-flex align-items-center gap-3">
+            <span class="text-white opacity-75 small">
+                <i class="bi bi-person-circle"></i> Administrador
+            </span>
+            <a href="/inicio" class="btn btn-outline-light btn-sm">
+                <i class="bi bi-box-arrow-right"></i> Salir
+            </a>
+        </div>
+    </div>
+</nav>
+
+<div class="sidebar">
+    <p class="sidebar-title">Principal</p>
+    <a href="/admin/dashboard" class="nav-link">
+        <i class="bi bi-speedometer2"></i> Dashboard
+    </a>
+
+    <p class="sidebar-title">Gestión</p>
+    <a href="/admin/residentes" class="nav-link">
+        <i class="bi bi-people"></i> Residentes
+    </a>
+    <a href="/admin/unidades" class="nav-link">
+        <i class="bi bi-building"></i> Unidades
+    </a>
+    <a href="/admin/pqrs" class="nav-link">
+        <i class="bi bi-chat-left-text"></i> PQRs
+    </a>
+    <a href="/admin/reservas" class="nav-link active">
+        <i class="bi bi-calendar-check"></i> Reservas
+    </a>
+
+    <p class="sidebar-title">Financiero</p>
+    <a href="/admin/cuotas" class="nav-link">
+        <i class="bi bi-cash-coin"></i> Cuotas
+    </a>
+    <a href="/admin/morosos" class="nav-link">
+        <i class="bi bi-exclamation-triangle"></i> Morosos
+    </a>
+    <a href="/admin/reportes" class="nav-link">
+        <i class="bi bi-file-earmark-bar-graph"></i> Reportes
+    </a>
+
+    <p class="sidebar-title">Contenido</p>
+    <a href="/admin/noticias" class="nav-link">
+        <i class="bi bi-newspaper"></i> Noticias
+    </a>
+    <a href="/admin/zonas-comunes" class="nav-link">
+        <i class="bi bi-grid"></i> Zonas Comunes
+    </a>
+    <a href="/admin/asambleas" class="nav-link">
+        <i class="bi bi-people-fill"></i> Asambleas
+    </a>
+
+    <p class="sidebar-title">Acceso</p>
+    <a href="/admin/proveedores" class="nav-link">
+        <i class="bi bi-tools"></i> Proveedores
+    </a>
+    <a href="/admin/visitantes" class="nav-link">
+        <i class="bi bi-door-open"></i> Visitantes
+    </a>
+
+    <p class="sidebar-title">Sistema</p>
+    <a href="/admin/configuracion" class="nav-link">
+        <i class="bi bi-gear"></i> Configuración
+    </a>
+    <a href="/admin/auditoria" class="nav-link">
+        <i class="bi bi-shield-check"></i> Auditoría
+    </a>
+</div>
+
+<div class="main-content">
+
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/admin/dashboard">Inicio</a></li>
+            <li class="breadcrumb-item active">Reservas</li>
+        </ol>
+    </nav>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4 class="fw-bold mb-1" style="color: #1a3c5e;">
+               Gestión de Zonas y Reservas
+            </h4>
+        </div>
+        <span class="badge bg-success px-3 py-2">
+            <i class="bi bi-circle-fill me-1" style="font-size:0.6rem;"></i>
+            Sistema activo
+        </span>
+    </div>
+
+    <div th:if="${param.successZona}" class="alert alert-success alert-dismissible fade show mb-4 border-0 shadow-sm" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i> Zona común configurada exitosamente.
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <div class="row g-4 mb-4">
+        
+        <div class="col-md-5 col-lg-4">
+            <div class="card table-card">
+                <div class="card-header">
+                    <i class="bi bi-plus-circle me-2"></i>Nueva Zona Común
+                </div>
+                <div class="card-body p-4">
+                    <form th:action="@{/admin/zonas/guardar}" th:object="${nuevaZona}" method="post" enctype="multipart/form-data">
+					    <div class="mb-3">
+					        <label class="form-label small fw-bold text-muted">Nombre del espacio</label>
+					        <input type="text" th:field="*{nombre}" class="form-control" placeholder="Cancha, Salón..." required>
+					    </div>
+					    <div class="mb-3">
+					        <label class="form-label small fw-bold text-muted">Capacidad Máx.</label>
+					        <input type="number" th:field="*{capacidadMaxima}" class="form-control" min="1" required>
+					    </div>
+					    <div class="mb-3">
+					        <label class="form-label small fw-bold text-muted">Costo por Reserva</label>
+					        <div class="input-group">
+					            <span class="input-group-text bg-light">$</span>
+					            <input type="number" th:field="*{costoReserva}" class="form-control" required>
+					        </div>
+					    </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-muted"><i class="bi bi-image me-1"></i> Imagen Ilustrativa</label>
+                            <input type="file" name="file" class="form-control" accept="image/*">
+                        </div>
+					    <div class="form-check form-switch mb-4">
+					        <input class="form-check-input" type="checkbox" th:field="*{disponible}" id="disponibleCheck" checked>
+					        <label class="form-check-label small" for="disponibleCheck">Habilitar para vecinos</label>
+					    </div>
+					    <button type="submit" class="btn btn-primary w-100 rounded-pill fw-bold" style="background: #1a3c5e; border: none;">
+					        Guardar Espacio
+					    </button>
+					</form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-7 col-lg-8">
+            <div class="card table-card">
+                <div class="card-header">
+                    <i class="bi bi-grid me-2"></i>Zonas Configuradas
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="ps-4" style="width: 80px;">Foto</th>
+                                    <th>Espacio</th>
+                                    <th>Capacidad</th>
+                                    <th>Costo</th>
+                                    <th>Estado</th>
+                                    <th class="text-center pe-4">Acción</th>
+                                </tr>
+                            </thead>
+							<tbody id="tablaZonas">
+							    <tr th:each="z : ${listaZonas}">
+                                    <td class="ps-4">
+                                        <img th:if="${z.imagenUrl != null}" th:src="${z.imagenUrl}" class="img-thumb-preview" alt="Zona">
+                                        <div th:if="${z.imagenUrl == null}" class="img-thumb-preview bg-light d-flex align-items-center justify-content-center text-muted">
+                                            <i class="bi bi-image" style="font-size: 1rem;"></i>
+                                        </div>
+                                    </td>
+							        <td class="fw-bold text-secondary text-capitalize" th:text="${z.nombre}"></td>
+							        <td th:text="${z.capacidadMaxima} + ' pers.'"></td>
+							        <td th:text="'$' + ${z.costoReserva}"></td>
+							        <td>
+							            <span th:text="${z.disponible} ? 'Activo' : 'Inactivo'" 
+							                  th:class="${z.disponible} ? 'badge bg-success' : 'badge bg-secondary'"></span>
+							        </td>
+							        <td class="text-center pe-4">
+							            <a th:href="@{/admin/zonas/eliminar/{id}(id=${z.id})}" 
+							               class="text-danger fs-5" 
+							               onclick="return confirm('¿Estás seguro de eliminar esta zona?')">
+							                <i class="bi bi-trash"></i>
+							            </a>
+							        </td>
+							    </tr>
+                                <tr th:if="${#lists.isEmpty(listaZonas)}">
+                                    <td colspan="6" class="text-center text-muted py-4 small">No hay zonas configuradas en el sistema.</td>
+                                </tr>
+							</tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card table-card">
+        <div class="card-header">
+            <i class="bi bi-calendar-check me-2"></i>Solicitudes de Reservas Pendientes
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4">Residente</th>
+                            <th>Zona</th>
+                            <th>Desde</th>
+                            <th>Hasta</th>
+                            <th>Estado</th>
+                            <th class="text-centerpe-4 text-center">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="r : ${reservas}">
+                            <td class="ps-4" th:text="${r.residenteId}"></td>
+                            <td class="fw-bold" th:text="${r.zonaComunId}" style="color: #1a3c5e;"></td>
+                            <td th:text="${#temporals.format(r.fechaHoraInicio, 'dd/MM/yyyy HH:mm')}"></td>
+                            <td th:text="${#temporals.format(r.fechaHoraFin, 'dd/MM/yyyy HH:mm')}"></td>
+                            <td>
+                                <span th:class="'badge badge-' + ${#strings.toLowerCase(r.estado)}" th:text="${r.estado}"></span>
+                            </td>
+                            <td class="text-centerpe-4 text-center">
+                                <div th:if="${r.estado.name() == 'PENDIENTE'}" class="d-flex justify-content-center gap-2">
+                                    <form th:action="@{/admin/reservas/actualizar-estado}" method="post" class="d-inline">
+                                        <input type="hidden" name="reservaId" th:value="${r.id}">
+                                        <input type="hidden" name="nuevoEstado" value="APROBADA">
+                                        <button class="btn btn-success btn-sm rounded-pill px-3 fw-bold">Aceptar</button>
+                                    </form>
+                                    <button class="btn btn-danger btn-sm rounded-pill px-3 fw-bold" th:onclick="'abrirRechazo(\''+${r.id}+'\')'">Rechazar</button>
+                                </div>
+                                <span th:unless="${r.estado.name() == 'PENDIENTE'}" class="text-muted small" th:text="${r.notasAdministracion != null ? r.notasAdministracion : 'Sin observaciones'}"></span>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(reservas)}">
+                            <td colspan="6" class="text-center text-muted py-4 small">No hay solicitudes de reserva registradas.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    function abrirRechazo(id) {
+        const notas = prompt("Motivo del rechazo de la reserva:");
+        if (notas) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/admin/reservas/actualizar-estado';
+            form.innerHTML = `
+                <input type="hidden" name="reservaId" value="${id}">
+                <input type="hidden" name="nuevoEstado" value="RECHAZADA">
+                <input type="hidden" name="notas" value="${notas}">
+            `;
+            document.body.appendChild(form);
+            form.submit();
+        }
+    }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CONVIVIRSMART - Nuestras Zonas Comunes</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root { 
+            --color-primary: #1a3c5e; 
+            --color-secondary: #2d6a9f; 
+            --body-bg: #f4f6f9;
+        }
+
+        body { 
+            background-color: var(--body-bg); 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding-top: 56px; /* Espacio para la navbar fixed-top */
+        }
+
+        /* Navbar Idéntica a la Landing Page */
+        .navbar {
+            background: linear-gradient(135deg, #1a3c5e, #2d6a9f) !important;
+        }
+        .navbar a, .navbar-brand { color: white !important; }
+        .navbar-brand { font-weight: 700; font-size: 1.3rem; }
+        .nav-link:hover { opacity: 0.8; }
+        .nav-link.active { font-weight: 700; opacity: 1; }
+
+        /* Estilo de títulos principales */
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--color-primary);
+            margin-bottom: 10px;
+        }
+
+        /* Tarjetas de Zonas Adaptadas al Estilo Corporativo */
+        .zona-card { 
+            border: 2px solid var(--color-primary) !important; 
+            border-radius: 16px; 
+            background: white; 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08); 
+            transition: transform 0.3s, box-shadow 0.3s; 
+            overflow: hidden; 
+        }
+        .zona-card:hover { 
+            transform: translateY(-5px); 
+            box-shadow: 0 8px 25px rgba(26,60,94,0.15); 
+        }
+        
+        .icon-box { 
+            height: 140px; 
+            background: linear-gradient(135deg, #1a3c5e, #2d6a9f); 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            color: white; 
+            font-size: 3.5rem; 
+        }
+        
+        .price-badge { 
+            background-color: #e3f2fd; 
+            color: #0d6efd; 
+            font-weight: 700; 
+            padding: 6px 14px; 
+            border-radius: 30px; 
+            font-size: 0.9rem; 
+            display: inline-block; 
+        }
+
+        .divider-line {
+            width: 60px; 
+            height: 3px; 
+            background-color: var(--color-secondary); 
+            opacity: 1;
+        }
+
+        /* Footer Idéntico a la Landing Page */
+        footer {
+            background: #1a3c5e;
+            color: white;
+            padding: 40px 0 20px;
+            margin-top: 5rem;
+        }
+        footer a { color: rgba(255,255,255,0.7); text-decoration: none; }
+        footer a:hover { color: white; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg fixed-top">
+    <div class="container">
+        <a class="navbar-brand" href="/inicio">CONVIVIRSMART</a>
+        <button class="navbar-toggler border-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto align-items-center gap-2">
+                <li class="nav-item">
+                    <a class="nav-link" href="/inicio">Inicio</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/noticias">Noticias</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="/zonas-comunes">Zonas Comunes</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/contacto">Contacto</a>
+                </li>
+                <li class="nav-item ms-2">
+                    <a class="btn btn-outline-light btn-sm" href="/login">
+                        <i class="bi bi-person"></i> Iniciar Sesión
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="btn btn-outline-light btn-sm" href="/registro">
+                        <i class="bi bi-person-plus"></i> Registrarse
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container py-5 mt-4">
+    <div class="text-center mb-5">
+        <h1 class="section-title">Espacios y Zonas Comunes</h1>
+        <p class="text-muted fs-5 mx-auto" style="max-width: 600px;">Instalaciones equipadas dentro de nuestro conjunto residencial para tu comodidad y eventos familiares.</p>
+        <hr class="mx-auto divider-line">
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-6 col-lg-3" th:each="z : ${zonas}">
+            <div class="card zona-card h-100">
+                
+                <div style="height: 140px; overflow: hidden; position: relative;">
+                    <img th:if="${z.imagenUrl != null}" th:src="@{${z.imagenUrl}}" class="w-100 h-100" style="object-fit: cover;" alt="Zona">
+                    
+                    <div th:unless="${z.imagenUrl != null}" class="icon-box">
+                        <i th:if="${#strings.contains(#strings.toLowerCase(z.nombre), 'cancha')}" class="bi bi-dribbble"></i>
+                        <i th:if="${#strings.contains(#strings.toLowerCase(z.nombre), 'salón') || #strings.contains(#strings.toLowerCase(z.nombre), 'salon')}" class="bi bi-people-fill"></i>
+                        <i th:if="${#strings.contains(#strings.toLowerCase(z.nombre), 'piscina')}" class="bi bi-water"></i>
+                        <i th:if="${#strings.contains(#strings.toLowerCase(z.nombre), 'bbq') || #strings.contains(#strings.toLowerCase(z.nombre), 'asado')}" class="bi bi-fire"></i>
+                        <i th:if="${#strings.contains(#strings.toLowerCase(z.nombre), 'gimnasio') || #strings.contains(#strings.toLowerCase(z.nombre), 'gym')}" class="bi bi-capslock-fill"></i>
+                        <i th:if="${!#strings.contains(#strings.toLowerCase(z.nombre), 'cancha') && !#strings.contains(#strings.toLowerCase(z.nombre), 'salón') && !#strings.contains(#strings.toLowerCase(z.nombre), 'salon') && !#strings.contains(#strings.toLowerCase(z.nombre), 'piscina') && !#strings.contains(#strings.toLowerCase(z.nombre), 'bbq') && !#strings.contains(#strings.toLowerCase(z.nombre), 'asado') && !#strings.contains(#strings.toLowerCase(z.nombre), 'gimnasio') && !#strings.contains(#strings.toLowerCase(z.nombre), 'gym')}" class="bi bi-building"></i>
+                    </div>
+                </div>
+                
+                <div class="card-body p-4 d-flex flex-column justify-content-between">
+                    <div>
+                        <h5 class="fw-bold card-title mb-2 text-capitalize" th:text="${z.nombre}" style="color: var(--color-primary);"></h5>
+                        <div class="mb-3">
+                            <span class="price-badge">
+                                <i class="bi bi-tag-fill me-1"></i>
+                                <span th:text="${z.costoReserva != null && z.costoReserva.compareTo(T(java.math.BigDecimal).ZERO) > 0} ? '$' + ${z.costoReserva} : 'Uso Gratuito'"></span>
+                            </span>
+                        </div>
+                        <p class="card-text text-muted small mb-2">
+                            <i class="bi bi-person-check-fill me-2 text-secondary"></i>
+                            Capacidad: <strong th:text="${z.capacidadMaxima} + ' personas'"></strong>.
+                        </p>
+                        <p class="text-muted small lh-sm" th:text="${z.descripcion}"></p>
+                    </div>
+                    
+                    <div class="mt-4 pt-3 border-top">
+                        <a href="/login" class="btn btn-outline-primary btn-sm w-100 rounded-pill fw-bold py-2">
+                            <i class="bi bi-calendar-plus me-1"></i> Reservar Espacio
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-12 text-center py-5 text-muted" th:if="${#lists.isEmpty(zonas)}">
+            <i class="bi bi-info-circle display-4 opacity-50 text-primary"></i>
+            <p class="mt-3 fs-5">No hay zonas comunes registradas para mostrar en este momento.</p>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

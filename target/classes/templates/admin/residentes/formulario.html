@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${titulo}">Formulario - CONVIVIRSMART</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root { --color-primary: #1a3c5e; }
+        body { background-color: #f0f2f5; padding: 50px 0; }
+        .form-card { border: 3px solid var(--color-primary); border-radius: 20px; max-width: 600px; margin: auto; background: white; padding: 30px; }
+        .form-control, .form-select { border: 2px solid #ced4da; border-radius: 10px; padding: 12px; }
+        .form-control:focus, .form-select:focus { border-color: var(--color-primary); box-shadow: none; }
+        .btn-save { background-color: var(--color-primary); color: white; border-radius: 10px; padding: 12px; font-weight: 700; width: 100%; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="form-card shadow">
+        <h3 class="fw-bold mb-4 text-center" style="color: var(--color-primary);" th:text="${titulo}">Registrar</h3>
+
+        <form th:action="@{/admin/residentes/guardar}" th:object="${usuario}" method="post">
+            <input type="hidden" th:if="${usuario.id != null and !#strings.isEmpty(usuario.id)}" th:field="*{id}">
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold">Nombres</label>
+                    <input type="text" th:field="*{nombres}" class="form-control" required placeholder="Ej: Juan">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold">Apellidos</label>
+                    <input type="text" th:field="*{apellidos}" class="form-control" required placeholder="Ej: Pérez">
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Correo Electrónico</label>
+                <input type="email" th:field="*{correo}" class="form-control" required placeholder="juan.perez@correo.com">
+            </div>
+
+            <div class="mb-3" th:if="${usuario.id == null}">
+                <label class="form-label fw-bold">Contraseña Inicial</label>
+                <input type="password" th:field="*{passwordHash}" class="form-control" th:required="${usuario.id == null}">
+                <small class="text-muted">Se encriptará automáticamente en el sistema.</small>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold">Teléfono</label>
+                    <input type="text" th:field="*{telefono}" class="form-control" placeholder="3001234567">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold">Unidad Asignada</label>
+                    <select th:field="*{unidadId}" class="form-select">
+                        <option value="">Sin asignar</option>
+                        <option th:each="unidad : ${unidades}"
+                                th:value="${unidad.id}"
+                                th:text="${'Torre ' + unidad.torre + ' - Apto ' + unidad.numero + ' (Piso ' + unidad.piso + ')'}">
+                        </option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="mt-4 d-flex gap-2">
+                
+                <button type="submit" class="btn btn-save">Guardar Residente</button>
+                <a th:href="@{/admin/residentes}" class="btn btn-outline-secondary" style="border-radius:10px; padding:12px;">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+</body>
+</html>

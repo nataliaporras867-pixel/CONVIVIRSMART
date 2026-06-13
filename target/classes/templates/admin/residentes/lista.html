@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Residentes - CONVIVIRSMART</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .main-card { border: 2.5px solid #1a3c5e; border-radius: 15px; background: white; }
+        .btn-stroke { border: 2px solid #1a3c5e; border-radius: 10px; font-weight: bold; }
+    </style>
+</head>
+<body class="bg-light p-4">
+    <div class="container">
+        
+        <div th:if="${param.success}" class="alert alert-success alert-dismissible fade show" role="alert">
+            ¡Residente guardado con éxito!
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <div th:if="${param.deleted}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            Residente eliminado correctamente.
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <div class="d-flex justify-content-between mb-4">
+            <h3 class="fw-bold" style="color: #1a3c5e;">Gestión de Residentes</h3>
+			<div class="d-flex gap-2">
+			                <a href="/admin/dashboard" class="btn btn-outline-secondary">
+			                    <i class="bi bi-arrow-left"></i> Volver
+			                </a>
+			                <a th:href="@{/admin/residentes/nuevo}" class="btn btn-stroke text-primary">
+			                    + Nuevo residente
+			                </a>
+			            </div>
+			        </div>
+        <div class="card main-card shadow-sm">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-4">ID</th>
+                        <th>Nombre</th>
+                        <th>Correo</th>
+                        <th>Teléfono</th>
+                        <th>Unidad</th>
+                        <th>Estado</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="res : ${residentes}">
+                        <td class="ps-4 text-muted" th:text="${res.id}"></td>
+                        <td class="fw-bold" th:text="${res.nombres + ' ' + res.apellidos}"></td>
+                        <td th:text="${res.correo}"></td>
+                        <td th:text="${res.telefono}"></td>
+                        <td>
+                            <span class="badge bg-light text-dark border" 
+                                  th:text="${res.unidadId != null and res.unidadId != '' ? res.unidadId : 'Pendiente'}"></span>
+                        </td>
+                        <td><span class="badge bg-success">Activo</span></td>
+                        <td class="text-center">
+                            
+							<a th:href="@{/admin/residentes/editar/{id}(id=${res.id})}" class="btn btn-sm btn-outline-primary">
+							    <i class="bi bi-pencil"></i>
+							</a>
+                            
+							<a th:href="@{/admin/residentes/eliminar/{id}(id=${res.id})}" 
+							   class="btn btn-sm btn-outline-danger"
+							   onclick="return confirm('¿Seguro que deseas eliminar este residente del sistema?')">
+							    <i class="bi bi-trash"></i>
+							</a>
+                            
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
