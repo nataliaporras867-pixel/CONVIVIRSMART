@@ -2,15 +2,10 @@ package com.convivir.app.controller;
 
 import com.convivir.app.model.Noticia;
 import com.convivir.app.service.NoticiaService;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -21,7 +16,8 @@ public class NoticiaWebController {
 
     private final NoticiaService noticiaService;
     
-    private final String UPLOAD_DIR = "src/main/resources/static/uploads/";
+    // 1. CORRECCIÓN: Ahora se guarda en una carpeta "uploads" externa en la raíz del proyecto
+    private final String UPLOAD_DIR = "uploads/";
 
     public NoticiaWebController(NoticiaService noticiaService) {
         this.noticiaService = noticiaService;
@@ -42,10 +38,11 @@ public class NoticiaWebController {
                 String nombreArchivo = System.currentTimeMillis() + "_" + file.getOriginalFilename();
                 Path path = Paths.get(UPLOAD_DIR + nombreArchivo);
                 
+                // Crea la carpeta externa si no existe
                 Files.createDirectories(path.getParent());
                 Files.write(path, file.getBytes());
                 
-                
+                // 2. CORRECCIÓN: Guardamos solo el nombre o la ruta web relativa limpia
                 noticia.setUrlImagen("/uploads/" + nombreArchivo);
             }
             
@@ -56,26 +53,9 @@ public class NoticiaWebController {
         return "redirect:/admin/noticias"; 
     }
 
-    @GetMapping("/uploads/{filename:.+}")
-    @ResponseBody
-    public ResponseEntity<Resource> servirImagen(@PathVariable String filename) {
-        try {
-            Path path = Paths.get(UPLOAD_DIR + filename);
-            Resource resource = new FileSystemResource(path);
-            
-            
-            String contentType = Files.probeContentType(path);
-            if (contentType == null) {
-                contentType = "application/octet-stream";
-            }
-            
-            return ResponseEntity.ok()
-                    .contentType(MediaType.parseMediaType(contentType))
-                    .body(resource);
-        } catch (Exception e) {
-            return ResponseEntity.notFound().build();
-        }
-    }
+    // 3. ELIMINADO: Quité el método @GetMapping("/uploads/{filename}") viejo.
+    // Al haber creado 'MvcConfig', Spring Boot se encargará de mapear y servir
+    // de forma eficiente y automática todas las imágenes de la carpeta externa.
     
     @GetMapping("/admin/noticias/eliminar/{id}")
     public String eliminarNoticia(@PathVariable String id) {
